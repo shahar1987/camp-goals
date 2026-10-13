@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>יעדי מחנה וינגייט</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700&family=Assistant:wght@400;600;700&display=swap">
+<style>
+/* Layout: one centered column for the kids at the iPad, a wider table view for the coach */
+:root{
+  --bg:#EEF2F6; --surface:#FFFFFF; --ink:#13243A; --muted:#5B6B7F; --line:#D5DDE6;
+  --court:#1D4E89; --court-ink:#FFFFFF; --ball:#E8731A; --ok:#1F8A4C; --no:#B8412F; --done:#E3EAF2;
+  --display:"Rubik","Assistant",system-ui,sans-serif; --body:"Assistant",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0F1722; --surface:#172231; --ink:#E7EDF5; --muted:#9AA9BB; --line:#2A3A4E;
+  --court:#4C8BD6; --court-ink:#0B1420; --ball:#F08A3A; --ok:#46B475; --no:#E06A57; --done:#1F2D3F; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;margin:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+.wrap{max-width:900px;margin:0 auto;padding-inline:20px;padding-block:20px 40px;display:flex;flex-direction:column;gap:20px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,5vw,38px);margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:16px;margin-top:2px}
+.chip{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px}
+.chip i{width:10px;height:10px;border-radius:50%;background:var(--ball);display:inline-block}
+.coachbtn{background:none;border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:8px 14px;font:600 15px var(--body);cursor:pointer}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:16px}
+h2{font-family:var(--display);font-weight:500;font-size:24px;margin:0}
+.hint{color:var(--muted);font-size:16px;margin:-8px 0 0}
+.names{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.name{min-height:64px;border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;font:700 19px var(--body);cursor:pointer;padding:8px}
+.name:hover{border-color:var(--court)}
+.name[disabled]{background:var(--done);color:var(--muted);cursor:default;border-color:transparent}
+.name[disabled]::after{content:" ✓";color:var(--ok)}
+label{font-weight:700;font-size:20px;display:block}
+input[type=text],input[type=email],input[type=password],textarea{width:100%;font:400 22px var(--body);padding:14px 16px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}
+textarea{font-size:18px;min-height:220px}
+input:focus,textarea:focus,button:focus-visible{outline:3px solid var(--ball);outline-offset:2px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.big{flex:1;min-height:64px;border:0;border-radius:12px;background:var(--court);color:var(--court-ink);font:700 22px var(--display);cursor:pointer;padding:0 20px}
+.big.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.big[disabled]{opacity:.45;cursor:default}
+.yes,.noo{flex:1;min-height:90px;border-radius:14px;border:3px solid var(--line);background:var(--surface);font:700 28px var(--display);cursor:pointer;color:var(--ink)}
+.yes[aria-pressed=true]{border-color:var(--ok);background:var(--ok);color:#fff}
+.noo[aria-pressed=true]{border-color:var(--no);background:var(--no);color:#fff}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.scale button{min-height:70px;border-radius:12px;border:3px solid var(--line);background:var(--surface);color:var(--ink);font:700 26px var(--display);cursor:pointer}
+.scale button[aria-pressed=true]{background:var(--court);border-color:var(--court);color:var(--court-ink)}
+.scale-ends{display:flex;justify-content:space-between;color:var(--muted);font-size:15px;margin-top:6px}
+.done{text-align:center;padding-block:40px}
+.done .ballmark{width:64px;height:64px;border-radius:50%;background:var(--ball);margin:0 auto 14px}
+.msg{color:var(--no);font-weight:600;margin:0}
+.link{background:none;border:0;color:var(--court);font:600 17px var(--body);cursor:pointer;padding:4px 0;text-decoration:underline;align-self:flex-start}
+.keypad{display:grid;grid-template-columns:repeat(3,80px);gap:10px;justify-content:center}
+.keypad button{height:64px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:700 24px var(--display);cursor:pointer}
+.dots{text-align:center;font-size:30px;letter-spacing:12px;min-height:40px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.stat{border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.stat b{display:block;font:700 30px var(--display);font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:15px}
+.seg{display:flex;border:2px solid var(--court);border-radius:12px;overflow:hidden}
+.seg button{flex:1;min-height:52px;border:0;background:transparent;color:var(--court);font:700 18px var(--body);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--court);color:var(--court-ink)}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:16px;min-width:640px}
+th{text-align:right;color:var(--muted);font-weight:600;border-bottom:2px solid var(--line);padding:8px}
+td{border-bottom:1px solid var(--line);padding:10px 8px;vertical-align:top}
+.num{font-variant-numeric:tabular-nums}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-weight:700;font-size:14px}
+.pill.yes2{background:var(--ok);color:#fff}.pill.no2{background:var(--no);color:#fff}.pill.wait{background:var(--done);color:var(--muted)}
+.mini{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:4px 10px;font:600 14px var(--body);cursor:pointer}
+.mini.danger{border-color:var(--no);color:var(--no)}
+.status{font-size:15px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.done .ballmark{animation:bounce .9s ease-out 1}@keyframes bounce{0%{transform:translateY(-30px)}60%{transform:translateY(0)}80%{transform:translateY(-8px)}100%{transform:translateY(0)}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>היעד שלי במחנה</h1>
+      <div class="sub">מחנה אימונים וינגייט · 16–17 באוקטובר</div>
+    </div>
+    <div class="row" style="align-items:center">
+      <span class="chip" id="phaseChip" hidden><i></i><span id="phaseText">פתיחת המחנה</span></span>
+      <button class="coachbtn" id="coachBtn" type="button" hidden>מאמן</button>
+    </div>
+  </header>
+
+  <!-- Loading -->
+  <section class="panel" id="vLoading"><p class="status" style="margin:0">טוען…</p></section>
+
+  <!-- Coach sign-in (once per iPad) -->
+  <section class="panel" id="vLogin" hidden>
+    <h2>כניסת מאמן</h2>
+    <p class="hint">נכנסים פעם אחת באייפד, והוא זוכר את הכניסה.</p>
+    <form id="loginForm" class="panel" style="padding:0;border:0">
+      <div><label for="email">אימייל</label><input type="email" id="email" autocomplete="username" required></div>
+      <div><label for="password">סיסמה</label><input type="password" id="password" autocomplete="current-password" required></div>
+      <p class="msg" id="loginMsg" hidden></p>
+      <div class="row"><button class="big" type="submit" id="loginBtn">כניסה</button></div>
+    </form>
+  </section>
+
+  <!-- Kid: pick name -->
+  <section class="panel" id="vNames" hidden>
+    <h2 id="namesTitle">לחץ על השם שלך</h2>
+    <p class="hint">אחרי שתסיים, תעביר את האייפד לבא בתור.</p>
+    <div class="names" id="namesGrid"></div>
+    <div id="freeName" hidden>
+      <label for="nameInput">השם שלי</label>
+      <input type="text" id="nameInput" maxlength="30" autocomplete="off" placeholder="שם פרטי ושם משפחה">
+      <div class="row" style="margin-top:12px"><button class="big" id="nameGo" type="button" disabled>המשך</button></div>
+    </div>
+    <button class="link" id="notListed" type="button" hidden>השם שלי לא ברשימה</button>
+  </section>
+
+  <!-- Kid: opening -->
+  <section class="panel" id="vStart" hidden>
+    <h2 id="startHello">שלום</h2>
+    <div>
+      <label for="goalInput">מה המטרה שלך במחנה?</label>
+      <p class="hint" style="margin-top:4px">מילה או שתיים. למשל: עקיפה, סרב קצר, לא לוותר</p>
+      <input type="text" id="goalInput" maxlength="30" autocomplete="off">
+    </div>
+    <p class="msg" id="startMsg" hidden></p>
+    <div class="row"><button class="big ghost" type="button" data-back>חזרה</button><button class="big" id="startSave" type="button" disabled>שמור</button></div>
+  </section>
+
+  <!-- Kid: closing -->
+  <section class="panel" id="vEnd" hidden>
+    <h2 id="endHello">שלום</h2>
+    <div>
+      <label for="endGoalInput">מה הייתה המטרה שכתבת בפתיחת המחנה?</label>
+      <p class="hint" style="margin-top:4px">תכתוב מהזיכרון</p>
+      <input type="text" id="endGoalInput" maxlength="30" autocomplete="off">
+    </div>
+    <div>
+      <label>לדעתך, עמדת במטרה?</label>
+      <div class="row" style="margin-top:10px">
+        <button class="yes" id="btnYes" type="button" aria-pressed="false">כן</button>
+        <button class="noo" id="btnNo" type="button" aria-pressed="false">לא</button>
+      </div>
+    </div>
+    <div>
+      <label>כמה השתפרת במחנה?</label>
+      <div class="scale" id="scale" style="margin-top:10px"></div>
+      <div class="scale-ends"><span>1 – בכלל לא</span><span>5 – המון</span></div>
+    </div>
+    <p class="msg" id="endMsg" hidden></p>
+    <div class="row"><button class="big ghost" type="button" data-back>חזרה</button><button class="big" id="endSave" type="button" disabled>שמור</button></div>
+  </section>
+
+  <!-- Kid: saved -->
+  <section class="panel done" id="vDone" hidden>
+    <div class="ballmark" aria-hidden="true"></div>
+    <h2 id="doneTitle">נשמר!</h2>
+    <p class="hint" style="margin:0">תעביר את האייפד לבא בתור.</p>
+    <div class="row" style="justify-content:center"><button class="big" type="button" data-back style="flex:0 1 280px">הבא בתור</button></div>
+  </section>
+
+  <!-- Coach: code -->
+  <section class="panel" id="vPin" hidden>
+    <h2>מסך המאמן</h2>
+    <p class="hint">הקש את הקוד</p>
+    <div class="dots" id="pinDots" aria-live="polite"></div>
+    <div class="keypad" id="keypad"></div>
+    <p class="msg" id="pinMsg" hidden>קוד שגוי</p>
+    <button class="link" type="button" data-back>חזרה לילדים</button>
+  </section>
+
+  <!-- Coach: results -->
+  <section class="panel" id="vCoach" hidden>
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <h2>מסך המאמן</h2>
+      <button class="big ghost" type="button" data-back style="flex:0 0 auto;min-height:48px;font-size:18px">חזרה לילדים</button>
+    </div>
+    <p class="msg" id="coachMsg" hidden></p>
+    <div>
+      <label style="font-size:17px;margin-bottom:8px">מה הילדים רואים עכשיו</label>
+      <div class="seg" role="group" aria-label="שלב">
+        <button type="button" id="segStart" aria-pressed="true">פתיחה: כתיבת מטרה</button>
+        <button type="button" id="segEnd" aria-pressed="false">סיום: בדיקת מטרה</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="sStart">0</b><span>כתבו מטרה</span></div>
+      <div class="stat"><b id="sEnd">0</b><span>ענו בסיום</span></div>
+      <div class="stat"><b id="sYes">0</b><span>עמדו במטרה</span></div>
+      <div class="stat"><b id="sMatch">0</b><span>זכרו את המטרה</span></div>
+      <div class="stat"><b id="sAvg">–</b><span>השתפרות ממוצעת (1–5)</span></div>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>שם</th><th>המטרה בפתיחה</th><th>מה זכר בסיום</th><th>עמד במטרה?</th><th>השתפרות</th><th></th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <p class="hint" id="emptyRows" style="margin:0">עוד אין תשובות. כשהילדים יכתבו מטרה, היא תופיע כאן.</p>
+    <div class="row"><button class="big ghost" id="exportBtn" type="button" style="flex:0 1 260px;min-height:52px;font-size:18px">ייצוא לאקסל</button></div>
+    <details>
+      <summary style="cursor:pointer;font-weight:700">רשימת השמות</summary>
+      <p class="hint" style="margin-top:8px">שם אחד בכל שורה. הילדים יבחרו את השם שלהם מהרשימה.</p>
+      <textarea id="rosterInput" aria-label="רשימת שמות"></textarea>
+      <div class="row" style="margin-top:10px"><button class="big" id="rosterSave" type="button" style="flex:0 1 240px">שמור רשימה</button><span id="rosterMsg" class="hint" style="margin:0;align-self:center"></span></div>
+    </details>
+    <p class="status" style="margin:0">מחובר: <span id="who"></span> · <button class="link" id="logout" type="button" style="display:inline;padding:0">יציאה</button></p>
+  </section>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+// Public web config of the club's Firebase project (not a secret; access is enforced by Firestore rules).
+const app = initializeApp({
+  apiKey: "AIzaSyCmEVnBSkODaCZyrdEdO0vNQtvOnvgsQiA",
+  authDomain: "ttcmh-2a752.firebaseapp.com",
+  projectId: "ttcmh-2a752",
+  storageBucket: "ttcmh-2a752.firebasestorage.app",
+  messagingSenderId: "198162387540",
+  appId: "1:198162387540:web:f4c4728a39aed9468c13c1",
+});
+const auth = getAuth(app);
+const fs = getFirestore(app);
+const COL = "campGoals";            // all data of this site lives only here
+const SETTINGS = "settings";         // doc holding phase + roster
+const PIN = "9149";                  // keeps kids out of the coach screen on a shared iPad; real protection is the sign-in + rules
+
+const $ = id => document.getElementById(id);
+const views = ["vLoading","vLogin","vNames","vStart","vEnd","vDone","vPin","vCoach"];
+let phase = "start", roster = [], answers = {}, current = null, achieved = null, progress = 0, pin = "", doneTimer = null, unsub = null;
+
+const show = v => { views.forEach(x => $(x).hidden = x !== v); window.scrollTo(0,0); };
+const norm = s => (s||"").trim().replace(/\s+/g," ");
+function keyFor(name){ let h = 5381; for (const c of norm(name)) h = ((h*33) ^ c.codePointAt(0)) >>> 0; return "p" + h.toString(16); }
+function esc(s){ const d = document.createElement("div"); d.textContent = s ?? ""; return d.innerHTML; }
+function errText(e){ return e && e.code === "permission-denied" ? "אין הרשאה לשמור. צריך להוסיף את כלל האבטחה ב-Firebase." : "לא נשמר. בדוק את האינטרנט ונסה שוב."; }
+
+// --- auth ---
+setPersistence(auth, browserLocalPersistence).catch(()=>{});
+onAuthStateChanged(auth, user => {
+  if (unsub){ unsub(); unsub = null; }
+  const signedIn = !!user;
+  $("phaseChip").hidden = !signedIn; $("coachBtn").hidden = !signedIn;
+  if (!signedIn){ show("vLogin"); return; }
+  $("who").textContent = user.email || "";
+  unsub = onSnapshot(collection(fs, COL), snap => {
+    answers = {};
+    snap.forEach(d => {
+      if (d.id === SETTINGS){ const s = d.data(); phase = s.phase === "end" ? "end" : "start"; roster = Array.isArray(s.names) ? s.names.slice() : []; }
+      else answers[d.id] = d.data();
+    });
+    renderPhase(); renderNames(); renderCoach();
+    if (!$("vLoading").hidden) show("vNames");
+  }, e => {
+    $("coachMsg").textContent = errText(e); $("coachMsg").hidden = false;
+    renderPhase(); renderNames(); if (!$("vLoading").hidden) show("vNames");
+  });
+});
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault(); $("loginMsg").hidden = true; $("loginBtn").disabled = true;
+  try { await signInWithEmailAndPassword(auth, $("email").value.trim(), $("password").value); }
+  catch(err){ $("loginMsg").textContent = "האימייל או הסיסמה לא נכונים."; $("loginMsg").hidden = false; }
+  $("loginBtn").disabled = false;
+});
+$("logout").onclick = () => signOut(auth);
+
+// --- rendering ---
+function renderPhase(){
+  $("phaseText").textContent = phase === "start" ? "פתיחת המחנה" : "סיום המחנה";
+  $("namesTitle").textContent = phase === "start" ? "לחץ על השם שלך וכתוב את המטרה שלך" : "לחץ על השם שלך ובדוק את המטרה שלך";
+  $("segStart").setAttribute("aria-pressed", phase === "start");
+  $("segEnd").setAttribute("aria-pressed", phase === "end");
+}
+const isDone = a => !!a && (phase === "start" ? !!a.goal : !!a.achieved);
+function renderNames(){
+  const grid = $("namesGrid"); grid.innerHTML = "";
+  $("notListed").hidden = roster.length === 0;
+  if (!roster.length) $("freeName").hidden = false;
+  roster.forEach(n => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "name"; b.textContent = n;
+    b.disabled = isDone(answers[keyFor(n)]);
+    b.onclick = () => pick(n);
+    grid.appendChild(b);
+  });
+}
+(function buildScale(){
+  for (let i = 1; i <= 5; i++){
+    const b = document.createElement("button"); b.type = "button"; b.textContent = i; b.setAttribute("aria-pressed","false");
+    b.onclick = () => { progress = i; [...$("scale").children].forEach((x,j) => x.setAttribute("aria-pressed", j+1 === i)); updateEnd(); };
+    $("scale").appendChild(b);
+  }
+})();
+function pick(name){
+  current = norm(name); achieved = null; progress = 0;
+  if (phase === "start"){
+    const a = answers[keyFor(current)] || {};
+    $("startHello").textContent = "שלום " + current;
+    $("goalInput").value = a.goal || ""; $("startMsg").hidden = true; updateStart(); show("vStart"); $("goalInput").focus();
+  } else {
+    $("endHello").textContent = "שלום " + current;
+    $("endGoalInput").value = "";
+    ["btnYes","btnNo"].forEach(b => $(b).setAttribute("aria-pressed","false"));
+    [...$("scale").children].forEach(x => x.setAttribute("aria-pressed","false"));
+    $("endMsg").hidden = true; updateEnd(); show("vEnd"); $("endGoalInput").focus();
+  }
+}
+const updateStart = () => $("startSave").disabled = !norm($("goalInput").value);
+const updateEnd = () => $("endSave").disabled = !(norm($("endGoalInput").value) && achieved && progress);
+
+async function save(fields, msgEl){
+  const id = keyFor(current);
+  const body = Object.assign({}, answers[id] || {}, { name: current }, fields);
+  try {
+    await setDoc(doc(fs, COL, id), body);
+    $("doneTitle").textContent = "נשמר, " + current + "!" + (phase === "start" ? " בהצלחה במחנה" : " כל הכבוד");
+    show("vDone"); clearTimeout(doneTimer); doneTimer = setTimeout(() => { if (!$("vDone").hidden) backToKids(); }, 5000);
+  } catch(e){ msgEl.textContent = errText(e); msgEl.hidden = false; }
+}
+function backToKids(){ current = null; $("nameInput").value = ""; $("nameGo").disabled = true; if (roster.length) $("freeName").hidden = true; renderNames(); show("vNames"); }
+
+function coachRows(){
+  const rows = Object.values(answers).map(a => Object.assign({}, a));
+  const have = new Set(rows.map(r => r.name));
+  roster.forEach(n => { if (!have.has(n)) rows.push({ name: n, _missing: true }); });
+  return rows.sort((a,b) => (a.name||"").localeCompare(b.name||"","he"));
+}
+function renderCoach(){
+  const real = Object.values(answers);
+  const rated = real.filter(a => a.progress);
+  $("sStart").textContent = real.filter(a => a.goal).length + (roster.length ? " / " + roster.length : "");
+  $("sEnd").textContent = real.filter(a => a.achieved).length;
+  $("sYes").textContent = real.filter(a => a.achieved === "yes").length;
+  $("sMatch").textContent = real.filter(a => a.goal && a.endGoal && norm(a.goal) === norm(a.endGoal)).length;
+  $("sAvg").textContent = rated.length ? (rated.reduce((s,a) => s + a.progress, 0) / rated.length).toFixed(1) : "–";
+  const rows = coachRows();
+  $("emptyRows").hidden = rows.length > 0;
+  $("tbody").innerHTML = rows.map(r => {
+    const ach = r.achieved === "yes" ? '<span class="pill yes2">כן</span>' : r.achieved === "no" ? '<span class="pill no2">לא</span>' : '<span class="pill wait">עוד לא</span>';
+    const act = r._missing ? "" : `<button class="mini" type="button" data-reset="${keyFor(r.name)}">מחק תשובה</button>`;
+    return `<tr><td><b>${esc(r.name)}</b></td><td>${r.goal ? esc(r.goal) : '<span class="pill wait">עוד לא</span>'}</td><td>${esc(r.endGoal || "")}</td><td>${r._missing ? "" : ach}</td><td class="num">${r.progress || ""}</td><td>${act}</td></tr>`;
+  }).join("");
+}
+
+// --- coach code ---
+["1","2","3","4","5","6","7","8","9","","0","⌫"].forEach(k => {
+  const b = document.createElement("button"); b.type = "button"; b.textContent = k;
+  if (!k){ b.style.visibility = "hidden"; b.tabIndex = -1; }
+  b.onclick = () => {
+    $("pinMsg").hidden = true;
+    if (k === "⌫") pin = pin.slice(0,-1); else if (pin.length < 4) pin += k;
+    $("pinDots").textContent = "●".repeat(pin.length);
+    if (pin.length === 4){
+      const ok = pin === PIN; pin = ""; $("pinDots").textContent = "";
+      if (ok){ $("rosterInput").value = roster.join("\n"); renderCoach(); show("vCoach"); } else $("pinMsg").hidden = false;
+    }
+  };
+  $("keypad").appendChild(b);
+});
+
+// --- events ---
+$("coachBtn").onclick = () => { pin = ""; $("pinDots").textContent = ""; $("pinMsg").hidden = true; show("vPin"); };
+document.querySelectorAll("[data-back]").forEach(b => b.onclick = backToKids);
+$("notListed").onclick = () => { $("freeName").hidden = false; $("nameInput").focus(); };
+$("nameInput").oninput = () => $("nameGo").disabled = !norm($("nameInput").value);
+$("nameGo").onclick = () => pick($("nameInput").value);
+$("goalInput").oninput = updateStart;
+$("endGoalInput").oninput = updateEnd;
+$("btnYes").onclick = () => { achieved = "yes"; $("btnYes").setAttribute("aria-pressed","true"); $("btnNo").setAttribute("aria-pressed","false"); updateEnd(); };
+$("btnNo").onclick = () => { achieved = "no"; $("btnNo").setAttribute("aria-pressed","true"); $("btnYes").setAttribute("aria-pressed","false"); updateEnd(); };
+$("startSave").onclick = () => save({ goal: norm($("goalInput").value), startAt: Date.now() }, $("startMsg"));
+$("endSave").onclick = () => save({ endGoal: norm($("endGoalInput").value), achieved, progress, endAt: Date.now() }, $("endMsg"));
+async function saveSettings(patch, msgEl){
+  try { await setDoc(doc(fs, COL, SETTINGS), Object.assign({ phase, names: roster }, patch)); return true; }
+  catch(e){ (msgEl || $("coachMsg")).textContent = errText(e); (msgEl || $("coachMsg")).hidden = false; return false; }
+}
+$("segStart").onclick = () => phase !== "start" && saveSettings({ phase: "start" });
+$("segEnd").onclick = () => phase !== "end" && saveSettings({ phase: "end" });
+$("rosterSave").onclick = async () => {
+  const list = [...new Set($("rosterInput").value.split("\n").map(norm).filter(Boolean))];
+  if (await saveSettings({ names: list }, $("rosterMsg"))) $("rosterMsg").textContent = "נשמרו " + list.length + " שמות";
+};
+$("tbody").addEventListener("click", async e => {
+  const b = e.target.closest("[data-reset]"); if (!b) return;
+  if (b.dataset.armed !== "1"){ // two taps to delete
+    b.dataset.armed = "1"; b.textContent = "בטוח? לחץ שוב"; b.classList.add("danger");
+    setTimeout(() => { if (b.isConnected){ b.dataset.armed = ""; b.textContent = "מחק תשובה"; b.classList.remove("danger"); } }, 4000);
+    return;
+  }
+  try { await deleteDoc(doc(fs, COL, b.dataset.reset)); } catch(err){ $("coachMsg").textContent = errText(err); $("coachMsg").hidden = false; }
+});
+$("exportBtn").onclick = () => {
+  const q = v => '"' + String(v ?? "").replace(/"/g,'""') + '"';
+  const lines = [["שם","המטרה בפתיחה","מה זכר בסיום","עמד במטרה","השתפרות 1-5"].map(q).join(",")];
+  coachRows().forEach(r => lines.push([r.name, r.goal, r.endGoal, r.achieved === "yes" ? "כן" : r.achieved === "no" ? "לא" : "", r.progress].map(q).join(",")));
+  const blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "יעדי-מחנה-וינגייט.csv"; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+};
+</script>
+</body>
+</html>

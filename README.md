@@ -1,2 +1,3 @@
 # camp-goals
-Wingate camp goals page (code only; data is behind sign-in in Firebase)
+
+דף יעדים למחנה האימונים בווינגייט. הקוד בלבד נמצא כאן; התשובות נשמרות ב-Firebase ונגישות רק אחרי כניסה.
