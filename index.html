@@ -2,6 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="light">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -24,10 +25,6 @@
   --spring:linear(0,.06 2%,.24 5%,.62 11%,.86 16%,1.01 21%,1.07 25%,1.09 28%,1.07 32%,1.02 38%,.995 45%,.99 52%,1 70%,1);
   color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root{
-  --bg:#000000; --surface:#1C1C1E; --surface2:#2C2C2E; --ink:#F5F5F7; --muted:#98989F; --line:rgba(84,84,88,.5);
-  --accent:#3AB4F2; --accent-ink:#00131F; --accent-soft:rgba(58,180,242,.16); --ok:#32D74B; --no:#FF453A; --done:#2C2C2E;
-  --bar:rgba(18,18,20,.7); --shadow:0 1px 2px rgba(0,0,0,.5); color-scheme:dark}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{min-height:100%}
 body{background:var(--bg);color:var(--ink);font:400 18px/1.45 var(--font);margin:0;padding-bottom:env(safe-area-inset-bottom,0px);-webkit-font-smoothing:antialiased}
@@ -137,11 +134,6 @@ body{background:
   radial-gradient(700px 480px at -10% 15%, rgba(255,122,26,.22), transparent 60%),
   radial-gradient(800px 600px at 60% 110%, rgba(215,38,61,.16), transparent 60%),
   linear-gradient(180deg,#EAF6FD,#F6F3FF 60%,#FFF4EA) fixed}
-@media (prefers-color-scheme: dark){body{background:
-  radial-gradient(900px 520px at 100% -10%, rgba(58,180,242,.30), transparent 60%),
-  radial-gradient(700px 480px at -10% 15%, rgba(255,122,26,.20), transparent 60%),
-  radial-gradient(800px 600px at 60% 110%, rgba(215,38,61,.20), transparent 60%),
-  linear-gradient(180deg,#07121C,#0E0B1A 60%,#140B08) fixed}}
 .bar{background:color-mix(in srgb,var(--surface) 62%,transparent)}
 .hero h1{background:linear-gradient(270deg,#0A8FD0,#8E5CF7 55%,#FF7A1A);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:4px}
 .ballhop{display:inline-block;width:.62em;height:.62em;border-radius:50%;margin-inline-start:.25em;vertical-align:.08em;background:radial-gradient(circle at 35% 30%,#FFD2A6,#FF7A1A 55%,#E25E00);box-shadow:0 6px 12px -4px rgba(255,122,26,.7)}
