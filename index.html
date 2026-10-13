@@ -113,11 +113,54 @@ td{border-top:.5px solid var(--line);padding:12px;vertical-align:top}
 .mini{background:var(--surface2);border:0;color:var(--muted);border-radius:999px;padding:6px 12px;font:600 14px var(--font);cursor:pointer}
 .mini.danger{background:var(--no);color:#fff}
 .status{font-size:15px;color:var(--muted)}
+.acts{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+.mini.edit{background:var(--accent-soft);color:var(--accent)}
+.sheet{border:0;padding:0;background:transparent;width:min(560px,calc(100vw - 32px));max-height:calc(100dvh - 32px);color:var(--ink)}
+.sheet::backdrop{background:rgba(0,0,0,.32);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.sheet .panel{box-shadow:0 24px 60px -12px rgba(0,0,0,.35);max-height:calc(100dvh - 32px);overflow:auto}
+.opts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.opts button{flex:1;min-width:52px;min-height:52px;border-radius:14px;border:0;background:var(--surface2);color:var(--ink);font:600 18px var(--font);cursor:pointer;box-shadow:inset 0 0 0 .5px var(--line);transition:background .25s var(--ease),color .25s var(--ease),transform .35s var(--spring)}
+.opts button:active{transform:scale(.96)}
+.opts button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink)}
+.opts button[aria-pressed=true][data-v=yes]{background:var(--ok);color:#fff}
+.opts button[aria-pressed=true][data-v=no]{background:var(--no);color:#fff}
+@media (prefers-reduced-motion:no-preference){.sheet[open] .panel{animation:rise .45s var(--ease)}}
 details summary{cursor:pointer;font-weight:600;list-style:none;padding:4px 0}
 details summary::before{content:"›";display:inline-block;margin-inline-end:8px;transition:transform .3s var(--spring)}
 details[open] summary::before{transform:rotate(90deg)}
 .foot{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:13px;padding-top:4px}
 .foot img{width:26px;height:auto;background:#fff;border-radius:7px;padding:2px}
+
+/* --- happier layer: club colors (ITTA blue, paddle red, ball orange) --- */
+body{background:
+  radial-gradient(900px 520px at 100% -10%, rgba(10,143,208,.28), transparent 60%),
+  radial-gradient(700px 480px at -10% 15%, rgba(255,122,26,.22), transparent 60%),
+  radial-gradient(800px 600px at 60% 110%, rgba(215,38,61,.16), transparent 60%),
+  linear-gradient(180deg,#EAF6FD,#F6F3FF 60%,#FFF4EA) fixed}
+@media (prefers-color-scheme: dark){body{background:
+  radial-gradient(900px 520px at 100% -10%, rgba(58,180,242,.30), transparent 60%),
+  radial-gradient(700px 480px at -10% 15%, rgba(255,122,26,.20), transparent 60%),
+  radial-gradient(800px 600px at 60% 110%, rgba(215,38,61,.20), transparent 60%),
+  linear-gradient(180deg,#07121C,#0E0B1A 60%,#140B08) fixed}}
+.bar{background:color-mix(in srgb,var(--surface) 62%,transparent)}
+.hero h1{background:linear-gradient(270deg,#0A8FD0,#8E5CF7 55%,#FF7A1A);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:4px}
+.ballhop{display:inline-block;width:.62em;height:.62em;border-radius:50%;margin-inline-start:.25em;vertical-align:.08em;background:radial-gradient(circle at 35% 30%,#FFD2A6,#FF7A1A 55%,#E25E00);box-shadow:0 6px 12px -4px rgba(255,122,26,.7)}
+@media (prefers-reduced-motion:no-preference){.ballhop{animation:hop 2.6s cubic-bezier(.3,0,.4,1) infinite}@keyframes hop{0%,55%,100%{transform:translateY(0) scale(1,1)}20%{transform:translateY(-.55em) scale(.96,1.04)}40%{transform:translateY(0) scale(1.1,.88)}47%{transform:translateY(-.12em)}}}
+.big{background:linear-gradient(135deg,#0A8FD0,#28B9F2);color:#fff;box-shadow:0 10px 22px -8px rgba(10,143,208,.75)}
+.big.ghost{background:var(--surface2);color:var(--ink);box-shadow:none}
+.names .name{--c:#0A8FD0;background:color-mix(in srgb,var(--c) 12%,var(--surface));box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--c) 30%,transparent)}
+.names .name:nth-child(5n+2){--c:#FF7A1A}.names .name:nth-child(5n+3){--c:#28A745}.names .name:nth-child(5n+4){--c:#D7263D}.names .name:nth-child(5n+5){--c:#8E5CF7}
+.names .name::before{content:"";position:absolute;top:10px;inset-inline-end:10px;width:9px;height:9px;border-radius:50%;background:var(--c)}
+.names .name[disabled]{background:var(--done);box-shadow:none}
+.names .name[disabled]::before{display:none}
+.stat{--c:#0A8FD0;background:color-mix(in srgb,var(--c) 13%,var(--surface))}
+.stat b{color:var(--c)}
+.stat:nth-child(2){--c:#8E5CF7}.stat:nth-child(3){--c:#28A745}.stat:nth-child(4){--c:#FF7A1A}.stat:nth-child(5){--c:#D7263D}
+.chip{background:color-mix(in srgb,#FF7A1A 14%,var(--surface))}
+.scale button[aria-pressed=true]{background:linear-gradient(135deg,#FF7A1A,#FFB020);color:#fff}
+.check{background:linear-gradient(135deg,#28A745,#5AD27A)}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+.confetti i{position:absolute;top:-20px;width:10px;height:16px;border-radius:3px}
 
 /* press feedback lives on pointer-down */
 .big,.name,.yes,.noo,.scale button,.coachbtn,.mini,.seg button,.keypad button,.link{transition-property:transform,background,color,box-shadow,opacity;transition-duration:.35s;transition-timing-function:var(--spring)}
@@ -151,7 +194,7 @@ details[open] summary::before{transform:rotate(90deg)}
 <div class="wrap">
   <div class="hero hero-row">
     <div>
-      <h1>היעד שלי במחנה</h1>
+      <h1>היעד שלי במחנה<span class="ballhop" aria-hidden="true"></span></h1>
       <div class="sub">מחנה אימונים וינגייט · 16–17 באוקטובר</div>
     </div>
     <span class="chip" id="phaseChip" hidden><i></i><span id="phaseText">פתיחת המחנה</span></span>
@@ -276,6 +319,17 @@ details[open] summary::before{transform:rotate(90deg)}
     </details>
     <p class="status" style="margin:0">מחובר: <span id="who"></span> · <button class="link" id="logout" type="button" style="display:inline;padding:0">יציאה</button></p>
   </section>
+  <dialog class="sheet" id="editDlg">
+    <form class="panel" id="editForm" method="dialog">
+      <h2 id="editTitle">עריכת תשובה</h2>
+      <div><label for="eGoal">המטרה בפתיחה</label><input type="text" id="eGoal" maxlength="30" autocomplete="off" style="margin-top:8px"></div>
+      <div><label for="eEnd">מה זכר בסיום</label><input type="text" id="eEnd" maxlength="30" autocomplete="off" style="margin-top:8px"></div>
+      <div><label>עמד במטרה?</label><div class="opts" id="eAch"><button type="button" data-v="yes">כן</button><button type="button" data-v="no">לא</button><button type="button" data-v="">עוד לא</button></div></div>
+      <div><label>השתפרות</label><div class="opts" id="eProg"><button type="button" data-v="1">1</button><button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button><button type="button" data-v="0">ריק</button></div></div>
+      <p class="msg" id="editMsg" hidden></p>
+      <div class="row"><button class="big ghost" type="button" id="editCancel">ביטול</button><button class="big" type="submit" id="editSave">שמור שינויים</button></div>
+    </form>
+  </dialog>
   <div class="foot"><img src="logo-itta.png" alt="">מחנה האימונים בוינגייט · מועדון טניס שולחן מבואות החרמון</div>
 </div>
 
@@ -396,7 +450,7 @@ async function save(fields, msgEl){
   try {
     await setDoc(doc(fs, COL, id), body);
     $("doneTitle").textContent = "נשמר, " + current + "!" + (phase === "start" ? " בהצלחה במחנה" : " כל הכבוד");
-    show("vDone"); clearTimeout(doneTimer); doneTimer = setTimeout(() => { if (!$("vDone").hidden) backToKids(); }, 5000);
+    show("vDone"); confetti(); clearTimeout(doneTimer); doneTimer = setTimeout(() => { if (!$("vDone").hidden) backToKids(); }, 5000);
   } catch(e){ msgEl.textContent = errText(e); msgEl.hidden = false; }
 }
 function backToKids(){ current = null; $("nameInput").value = ""; $("nameGo").disabled = true; if (roster.length) $("freeName").hidden = true; renderNames(); show("vNames"); }
@@ -419,7 +473,8 @@ function renderCoach(){
   $("emptyRows").hidden = rows.length > 0;
   $("tbody").innerHTML = rows.map(r => {
     const ach = r.achieved === "yes" ? '<span class="pill yes2">כן</span>' : r.achieved === "no" ? '<span class="pill no2">לא</span>' : '<span class="pill wait">עוד לא</span>';
-    const act = r._missing ? "" : `<button class="mini" type="button" data-reset="${keyFor(r.name)}">מחק תשובה</button>`;
+    const k = keyFor(r.name);
+    const act = `<div class="acts"><button class="mini edit" type="button" data-edit="${k}" data-name="${esc(r.name)}">${r._missing ? "הוסף" : "ערוך"}</button>` + (r._missing ? "" : `<button class="mini" type="button" data-reset="${k}">מחק</button>`) + `</div>`;
     return `<tr><td><b>${esc(r.name)}</b></td><td>${r.goal ? esc(r.goal) : '<span class="pill wait">עוד לא</span>'}</td><td>${esc(r.endGoal || "")}</td><td>${r._missing ? "" : ach}</td><td class="num">${r.progress || ""}</td><td>${act}</td></tr>`;
   }).join("");
 }
@@ -465,14 +520,54 @@ $("rosterSave").onclick = async () => {
   if (await saveSettings({ names: list }, $("rosterMsg"))) $("rosterMsg").textContent = "נשמרו " + list.length + " שמות";
 };
 $("tbody").addEventListener("click", async e => {
+  const ed = e.target.closest("[data-edit]"); if (ed) return openEdit(ed.dataset.edit, ed.dataset.name);
   const b = e.target.closest("[data-reset]"); if (!b) return;
   if (b.dataset.armed !== "1"){ // two taps to delete
     b.dataset.armed = "1"; b.textContent = "בטוח? לחץ שוב"; b.classList.add("danger");
-    setTimeout(() => { if (b.isConnected){ b.dataset.armed = ""; b.textContent = "מחק תשובה"; b.classList.remove("danger"); } }, 4000);
+    setTimeout(() => { if (b.isConnected){ b.dataset.armed = ""; b.textContent = "מחק"; b.classList.remove("danger"); } }, 4000);
     return;
   }
   try { await deleteDoc(doc(fs, COL, b.dataset.reset)); } catch(err){ $("coachMsg").textContent = errText(err); $("coachMsg").hidden = false; }
 });
+// --- celebration (skipped with reduced motion) ---
+function confetti(){
+  if (calm.matches) return;
+  const box = document.createElement("div"); box.className = "confetti"; document.body.appendChild(box);
+  const colors = ["#0A8FD0","#2BB7F0","#FF7A1A","#FFB020","#D7263D","#28A745","#8E5CF7"];
+  for (let i = 0; i < 70; i++){
+    const p = document.createElement("i"); p.style.left = Math.random()*100 + "vw"; p.style.background = colors[i % colors.length];
+    box.appendChild(p);
+    const x = (Math.random()-.5)*240, r = (Math.random()-.5)*900;
+    p.animate([{transform:"translate(0,0) rotate(0)",opacity:1},{transform:`translate(${x}px,${innerHeight+60}px) rotate(${r}deg)`,opacity:.9}],
+      {duration:1800+Math.random()*1400, delay:Math.random()*250, easing:"cubic-bezier(.2,.6,.4,1)", fill:"forwards"});
+  }
+  setTimeout(() => box.remove(), 3800);
+}
+
+// --- coach edit ---
+let editId = null, editName = "";
+const pickOpt = (box, v) => [...$(box).children].forEach(x => x.setAttribute("aria-pressed", x.dataset.v === String(v)));
+const optVal = box => ([...$(box).children].find(x => x.getAttribute("aria-pressed") === "true") || {}).dataset?.v ?? "";
+["eAch","eProg"].forEach(box => $(box).addEventListener("click", e => { const b = e.target.closest("button"); if (b) pickOpt(box, b.dataset.v); }));
+function openEdit(id, name){
+  const a = answers[id] || {};
+  editId = id; editName = a.name || name;
+  $("editTitle").textContent = editName;
+  $("eGoal").value = a.goal || ""; $("eEnd").value = a.endGoal || "";
+  pickOpt("eAch", a.achieved || ""); pickOpt("eProg", a.progress || 0);
+  $("editMsg").hidden = true; $("editDlg").showModal();
+}
+$("editCancel").onclick = () => $("editDlg").close();
+$("editForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const body = Object.assign({}, answers[editId] || {}, { name: editName, goal: norm($("eGoal").value), endGoal: norm($("eEnd").value), achieved: optVal("eAch"), progress: Number(optVal("eProg")) || 0, editedAt: Date.now() });
+  ["goal","endGoal","achieved","progress"].forEach(k => { if (!body[k]) delete body[k]; }); // empty = not answered yet
+  $("editSave").disabled = true;
+  try { await setDoc(doc(fs, COL, editId), body); $("editDlg").close(); }
+  catch(err){ $("editMsg").textContent = errText(err); $("editMsg").hidden = false; }
+  $("editSave").disabled = false;
+});
+
 $("exportBtn").onclick = () => {
   const q = v => '"' + String(v ?? "").replace(/"/g,'""') + '"';
   const lines = [["שם","המטרה בפתיחה","מה זכר בסיום","עמד במטרה","השתפרות 1-5"].map(q).join(",")];
