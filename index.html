@@ -181,7 +181,7 @@ body{background:
     <div class="logo"><img src="logo-itta.png" alt="איגוד טניס השולחן בישראל"></div>
     <div style="min-width:0"><div class="org">איגוד טניס השולחן בישראל</div><div class="org-en">ISRAEL TABLE TENNIS ASSOCIATION</div></div>
   </div>
-  <button class="coachbtn" id="coachBtn" type="button" hidden>מאמן</button>
+  <button class="coachbtn" id="coachBtn" type="button">מאמן</button>
 </div></div>
 <div class="wrap">
   <div class="hero hero-row">
@@ -189,7 +189,7 @@ body{background:
       <h1>היעד שלי במחנה<span class="ballhop" aria-hidden="true"></span></h1>
       <div class="sub">מחנה אימונים וינגייט · 16–17 באוקטובר</div>
     </div>
-    <span class="chip" id="phaseChip" hidden><i></i><span id="phaseText">פתיחת המחנה</span></span>
+    <span class="chip" id="phaseChip"><i></i><span id="phaseText">פתיחת המחנה</span></span>
   </div>
 
   <!-- Loading -->
@@ -198,13 +198,14 @@ body{background:
   <!-- Coach sign-in (once per iPad) -->
   <section class="panel" id="vLogin" hidden>
     <h2>כניסת מאמן</h2>
-    <p class="hint">נכנסים פעם אחת באייפד, והוא זוכר את הכניסה.</p>
+    <p class="hint">רק למסך המאמן. נכנסים פעם אחת במכשיר, והוא זוכר את הכניסה.</p>
     <form id="loginForm" class="panel" style="padding:0;border:0">
       <div><label for="email">אימייל</label><input type="email" id="email" autocomplete="username" required></div>
       <div><label for="password">סיסמה</label><input type="password" id="password" autocomplete="current-password" required></div>
       <p class="msg" id="loginMsg" hidden></p>
       <div class="row"><button class="big" type="submit" id="loginBtn">כניסה</button></div>
     </form>
+    <button class="link" type="button" data-back>חזרה לילדים</button>
   </section>
 
   <!-- Kid: pick name -->
@@ -362,34 +363,34 @@ function keyFor(name){ let h = 5381; for (const c of norm(name)) h = ((h*33) ^ c
 function esc(s){ const d = document.createElement("div"); d.textContent = s ?? ""; return d.innerHTML; }
 function errText(e){ return e && e.code === "permission-denied" ? "אין הרשאה לשמור. צריך להוסיף את כלל האבטחה ב-Firebase." : "לא נשמר. בדוק את האינטרנט ונסה שוב."; }
 
-// --- auth ---
+// --- data ---
+// Kids open the link with no sign-in: they only read settings and write their own answer.
+// Reading all answers (coach screen) needs the admin sign-in, asked for once per device after the PIN.
+const applySettings = s => { phase = s && s.phase === "end" ? "end" : "start"; roster = s && Array.isArray(s.names) ? s.names.slice() : []; };
+const ready = () => { renderPhase(); renderNames(); if (!$("vLoading").hidden) show("vNames"); };
+onSnapshot(doc(fs, COL, SETTINGS), d => { applySettings(d.exists() ? d.data() : null); ready(); }, () => ready());
+let wantCoach = false;
 setPersistence(auth, browserLocalPersistence).catch(()=>{});
 onAuthStateChanged(auth, user => {
   if (unsub){ unsub(); unsub = null; }
-  const signedIn = !!user;
-  $("phaseChip").hidden = !signedIn; $("coachBtn").hidden = !signedIn;
-  if (!signedIn){ show("vLogin"); return; }
+  answers = {};
+  if (!user){ renderNames(); return; }
   $("who").textContent = user.email || "";
   unsub = onSnapshot(collection(fs, COL), snap => {
     answers = {};
-    snap.forEach(d => {
-      if (d.id === SETTINGS){ const s = d.data(); phase = s.phase === "end" ? "end" : "start"; roster = Array.isArray(s.names) ? s.names.slice() : []; }
-      else answers[d.id] = d.data();
-    });
+    snap.forEach(d => { if (d.id === SETTINGS) applySettings(d.data()); else answers[d.id] = d.data(); });
     renderPhase(); renderNames(); renderCoach();
-    if (!$("vLoading").hidden) show("vNames");
-  }, e => {
-    $("coachMsg").textContent = errText(e); $("coachMsg").hidden = false;
-    renderPhase(); renderNames(); if (!$("vLoading").hidden) show("vNames");
-  });
+  }, e => { $("coachMsg").textContent = errText(e); $("coachMsg").hidden = false; });
+  if (wantCoach){ wantCoach = false; openCoach(); }
 });
+function openCoach(){ $("rosterInput").value = roster.join("\n"); renderCoach(); show("vCoach"); }
 $("loginForm").addEventListener("submit", async e => {
   e.preventDefault(); $("loginMsg").hidden = true; $("loginBtn").disabled = true;
-  try { await signInWithEmailAndPassword(auth, $("email").value.trim(), $("password").value); }
-  catch(err){ $("loginMsg").textContent = "האימייל או הסיסמה לא נכונים."; $("loginMsg").hidden = false; }
+  try { wantCoach = true; await signInWithEmailAndPassword(auth, $("email").value.trim(), $("password").value); }
+  catch(err){ wantCoach = false; $("loginMsg").textContent = "האימייל או הסיסמה לא נכונים."; $("loginMsg").hidden = false; }
   $("loginBtn").disabled = false;
 });
-$("logout").onclick = () => signOut(auth);
+$("logout").onclick = async () => { await signOut(auth); backToKids(); };
 
 // --- rendering ---
 function renderPhase(){
@@ -438,9 +439,8 @@ const updateEnd = () => $("endSave").disabled = !(norm($("endGoalInput").value) 
 
 async function save(fields, msgEl){
   const id = keyFor(current);
-  const body = Object.assign({}, answers[id] || {}, { name: current }, fields);
   try {
-    await setDoc(doc(fs, COL, id), body);
+    await setDoc(doc(fs, COL, id), Object.assign({ name: current }, fields), { merge: true });
     $("doneTitle").textContent = "נשמר, " + current + "!" + (phase === "start" ? " בהצלחה במחנה" : " כל הכבוד");
     show("vDone"); confetti(); clearTimeout(doneTimer); doneTimer = setTimeout(() => { if (!$("vDone").hidden) backToKids(); }, 5000);
   } catch(e){ msgEl.textContent = errText(e); msgEl.hidden = false; }
@@ -483,7 +483,7 @@ renderDots();
     renderDots();
     if (pin.length === 4){
       const ok = pin === PIN; pin = ""; setTimeout(renderDots, 250);
-      if (ok){ $("rosterInput").value = roster.join("\n"); renderCoach(); show("vCoach"); } else { $("pinMsg").hidden = false; const d = $("pinDots"); d.classList.remove("shake"); void d.offsetWidth; d.classList.add("shake"); }
+      if (ok){ if (auth.currentUser) openCoach(); else { $("loginMsg").hidden = true; show("vLogin"); } } else { $("pinMsg").hidden = false; const d = $("pinDots"); d.classList.remove("shake"); void d.offsetWidth; d.classList.add("shake"); }
     }
   };
   $("keypad").appendChild(b);
